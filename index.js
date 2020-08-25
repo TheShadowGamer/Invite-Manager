@@ -59,7 +59,7 @@ client.on('inviteCreate', async invite => {
 })
 
 client.on('guildMemberAdd', async member => {
-  if(process.env.welcomeChannel.toLowerCase() != "false") {
+  if(process.env.welcomeChannel != "false") {
     const welcomeChannel = client.channels.fetch(process.env.welcomeChannel)
     if(member.user.bot) return welcomeChannel.send(`<@${member.id}> joined the server using OAuth flow.`)
   }
@@ -72,12 +72,14 @@ client.on('guildMemberAdd', async member => {
     const currentInvites = await db.get(`${usedInvite.inviter.id}`)
     if(currentInvites) {
       const newamount = currentInvites-0 + 1-0
+      const welcomeChannel = await client.channels.fetch(process.env.welcomeChannel)
       if(welcomeChannel) {
         welcomeChannel.send(`<@${member.id}> joined the server. They were invited by **${usedInvite.inviter.tag}** (who has ${newamount} invites).`).catch(err => console.log(err));
       }
       db.set(`${member.id}`, `${usedInvite.inviter.id}`)
       db.set(`${usedInvite.inviter.id}`, `${newamount}`)
     } else {
+      const welcomeChannel = process.env.welcomeChannel
       db.set(`${usedInvite.inviter.id}`, `1`)
       db.set(`${member.id}`, `${usedInvite.inviter.id}`)
       if(welcomeChannel) {
@@ -91,7 +93,7 @@ client.on('guildMemberAdd', async member => {
 });
 
 client.on('guildMemberRemove', async member => {
-  if(process.env.welcomeChannel.toLowerCase() = "false") {
+  if(process.env.welcomeChannel != "false") {
     const welcomeChannel = client.channels.fetch(process.env.welcomeChannel)
     if(member.user.bot) return welcomeChannel.send(`<@${member.id}> left the server, they joined via OAuth.`)
   }
@@ -100,6 +102,7 @@ client.on('guildMemberRemove', async member => {
   const userinviter = await member.guild.members.fetch(`${inviter}`);
   const currentInvites = await db.get(`${inviter}`)
   try {
+    const welcomeChannel = await client.channels.fetch(process.env.welcomeChannel)
     const newamount = currentInvites-0 - 1-0
     if(welcomeChannel) {
       welcomeChannel.send(`${member.user.tag} left the server. They were invited by **${userinviter.user.tag}** (who has ${newamount} invites).`).catch(err => console.log(err));
