@@ -79,7 +79,7 @@ client.on('guildMemberAdd', async member => {
       db.set(`${member.id}`, `${usedInvite.inviter.id}`)
       db.set(`${usedInvite.inviter.id}`, `${newamount}`)
     } else {
-      const welcomeChannel = process.env.welcomeChannel
+      const welcomeChannel = await client.channels.fetch(process.env.welcomeChannel)
       db.set(`${usedInvite.inviter.id}`, `1`)
       db.set(`${member.id}`, `${usedInvite.inviter.id}`)
       if(welcomeChannel) {
