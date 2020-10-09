@@ -1,6 +1,6 @@
 exports.run = async (client, message, args) => {
   const db = require('../db.js');
-  if(message.member.roles.cache.some(role =>["Manage Invites"].includes(role.name))) {
+  if(!message.member.roles.cache.some(role =>["Manage Invites"].includes(role.name))) {
     return message.channel.send({embed: {
       description: `You need the \`Manage Invites\` role to use this command!`,
       footer: {
