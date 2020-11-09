@@ -1,5 +1,5 @@
 **Getting Started**  
-Invite Manager is an advanced, easy to setup, free, and unbranded Discord-Roblox ranking bot. The instructions to set it up and host it are available here: https://github.com/TheShadowGamer/invite-manager/wiki/setup
+Invite Manager is an advanced, easy to setup, free, and unbranded Discord bot. The instructions to set it up and host it are available here: https://github.com/TheShadowGamer/invite-manager/wiki/setup
 
 **Support**  
 If you need help with the bot, feel free to join our support server here: https://discord.gg/xNks8jb.
