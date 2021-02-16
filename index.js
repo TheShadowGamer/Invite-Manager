@@ -60,7 +60,7 @@ client.on('inviteCreate', async invite => {
 
 client.on('guildMemberAdd', async member => {
   if(process.env.welcomeChannel != "false") {
-    const welcomeChannel = client.channels.fetch(process.env.welcomeChannel)
+    const welcomeChannel = await client.channels.fetch(process.env.welcomeChannel)
     if(member.user.bot) return welcomeChannel.send(`<@${member.id}> joined the server using OAuth flow.`)
   }
   const db = require('./db.js')
@@ -94,7 +94,7 @@ client.on('guildMemberAdd', async member => {
 
 client.on('guildMemberRemove', async member => {
   if(process.env.welcomeChannel != "false") {
-    const welcomeChannel = client.channels.fetch(process.env.welcomeChannel)
+    const welcomeChannel = await client.channels.fetch(process.env.welcomeChannel)
     if(member.user.bot) return welcomeChannel.send(`<@${member.id}> left the server, they joined via OAuth.`)
   }
   const db = require('./db.js')
