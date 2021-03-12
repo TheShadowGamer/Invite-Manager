@@ -1,12 +1,12 @@
 const { AkairoClient, CommandHandler, ListenerHandler } = require('discord-akairo');
+const { Team } = require('discord.js');
+const { prefix } = require("./config");
 const Sequelize = require('sequelize');
 const path = require('path');
 const fs = require('fs');
-const config = require('./config');
 require('dotenv').config();
-const { prefix } = config;
 let client = new AkairoClient({partials: ['GUILD_MEMBER']});
-client.config = config;
+client.config = require("./config")
 const sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: '.data/db.sqlite',
@@ -75,6 +75,6 @@ registerSlashCommands('./commands/');
 client.login(process.env.token);
 client.fetchApplication().then((application) => {
     let owners = application.owner;
-    if(typeof owners === 'team') {owners = owners.members.map(user => user.id)} else {owners = owners.id};
+    if(owners instanceof Team) {owners = owners.members.map(user => user.id)} else {owners = owners.id};
     client.ownerID = owners;
 });

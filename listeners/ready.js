@@ -43,6 +43,6 @@ module.exports = class ReadyListener extends Listener {
         };
         let alreadyRegistered = await client.api.applications(application.id).commands.get();
         alreadyRegistered = alreadyRegistered.map(command => command.name);
-        if(!isEqual(alreadyRegistered, slashSetup.commands)) slashSetup(client);
+        if(!isEqual(alreadyRegistered, slashSetup.commands.map(command => command.name))) slashSetup(client);
     };
 };
