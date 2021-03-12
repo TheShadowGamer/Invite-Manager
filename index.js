@@ -38,7 +38,7 @@ let commandHandler = new CommandHandler(client, {
         }
     }
 });
-globalThis.handler = commandHandler
+client.handler = commandHandler;
 let listenerHandler = new ListenerHandler(client, {
     directory: './listeners/'
 });

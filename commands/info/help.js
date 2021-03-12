@@ -48,13 +48,13 @@ module.exports.slashCommand = async (client, interaction, args, respond) => {
     .setColor(client.config.colors.main)
     .setTimestamp()
     .setAuthor(client.user.username, client.user.displayAvatarURL({dynamic: true}));
-    const prefix = globalThis.handler.prefix;
+    const prefix = client.handler.prefix;
     let command;
-    if(args) command = globalThis.handler.findCommand(args[0].value);
+    if(args) command = client.handler.findCommand(args[0].value);
     if (!command) {
         embed.setTitle('Here are all of my commands!')
         .setDescription(`For more info on a specfic command, please do \`${prefix}help [command]\`!`);
-        globalThis.handler.categories.each((category) => {
+        client.handler.categories.each((category) => {
             embed.addField(category.id.slice(0)[0].toUpperCase() + category.id.slice(1), category.map((command) => prefix + command.aliases[0]).join(', '));
         });
         return respond({embeds: [embed]});

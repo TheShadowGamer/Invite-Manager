@@ -42,7 +42,7 @@ module.exports.slashCommand = async (client, interaction, args, respond) => {
         const member = await interaction.guild.members.fetch(args[0].value);
         const amount = args[1].value;
         interaction.member = await interaction.guild.members.fetch(interaction.member.user.id);
-        if(!interaction.member.roles.cache.some(role => role.name === 'Manage Invites')) globalThis.handler.emit('missingPermissions', respond, globalThis.handler.findCommand('invites'), 'user', 'Manage Invites');
+        if(!interaction.member.roles.cache.some(role => role.name === 'Manage Invites')) client.handler.emit('missingPermissions', respond, client.handler.findCommand('invites'), 'user', 'Manage Invites');
         let entry = await invites.findOrCreate({where: {discordUser: member.id, guildID: interaction.guild.id}, defaults: {discordUser: member.id, invites: 0, guildID: interaction.guild.id}});
         await entry[0].increment('invites', {by: amount});
         let embed = new MessageEmbed()
@@ -72,7 +72,7 @@ module.exports.slashCommand = async (client, interaction, args, respond) => {
         const member = await interaction.guild.members.fetch(args[0].value);
         const amount = args[1].value;
         interaction.member = await interaction.guild.members.fetch(interaction.member.user.id);
-        if(!interaction.member.roles.cache.some(role => role.name === 'Manage Invites')) globalThis.handler.emit('missingPermissions', respond, globalThis.handler.findCommand('invites'), 'user', 'Manage Invites');
+        if(!interaction.member.roles.cache.some(role => role.name === 'Manage Invites')) client.handler.emit('missingPermissions', respond, client.handler.findCommand('invites'), 'user', 'Manage Invites');
         let embed = new MessageEmbed()
         .setColor(client.config.colors.main)
         .setFooter(client.user.username, client.user.displayAvatarURL({dynamic: true}))
