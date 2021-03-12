@@ -61,9 +61,9 @@ module.exports.slashCommand = async (client, interaction, args, respond) => {
     };
     embed.setTitle(command.aliases[0])
     .setDescription('<> Is a required argument.\n[] Is an optional argument.')
-    .addField('Usage:', `${prefix}${command.aliases[0]}${command.description ? ' ' + command.description.usage : ''}`);
+    .addField('Usage:', `${prefix}${command.aliases[0]}${command.description ? ' ' + `${command.description.usage ? command.description.usage : ""}` : ''}`);
     if(command.aliases.length > 1) embed.addField('Aliases', command.aliases.splice(0).join(', '));
     embed.addField('Description:', command.description.content)
-    .addField('Owner Only?', command.ownerOnly.toString().slice(0)[0].toUpperCase() + command.ownerOnly.toString().slice(1))
+    .addField('Owner Only?', command.ownerOnly.toString().slice(0)[0].toUpperCase() + command.ownerOnly.toString().slice(1));
     return respond({embeds: [embed]});
 }
