@@ -37,7 +37,7 @@ module.exports.slashCommand = async (client, interaction, args, respond) => {
     .setFooter(client.user.username, client.user.displayAvatarURL({dynamic: true}))
     .setTimestamp()
     .setColor(client.config.colors.main);
-    const all = await invites.findAll({order: [['invites', 'DESC']], limit: 10, where: {guildID: message.guild.id}});
+    const all = await invites.findAll({order: [['invites', 'DESC']], limit: 10, where: {guildID: interaction.guild.id}});
     let LB = [];
     await all.forEach(async entry => {
         if(!entry.invites) return;
