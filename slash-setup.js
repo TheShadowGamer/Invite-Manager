@@ -103,3 +103,11 @@ module.exports = async (client) => {
 }
 
 module.exports.commands = commands
+
+module.exports.deleteCommands = async (client) => {
+    let application = await client.fetchApplication()
+    let commands = await client.api.applications(application.id).commands.get()
+    commands.forEach(command => {
+        client.api.applications(application.id).commands(command.id).delete()
+    })
+}

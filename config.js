@@ -4,6 +4,6 @@ module.exports = {
     slashCommands: true,
     colors: {
         main: [0, 110, 255],
-        error: "15158332"
+        error: [231, 76, 60]
     }
 }
