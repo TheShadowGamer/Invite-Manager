@@ -1,6 +1,6 @@
 const { Listener } = require('discord-akairo');
 const figlet = require('figlet');
-const { red, yellow } = require('chalk');
+const { red, yellow, yellowBright } = require('chalk');
 const { isEqual }= require('lodash');
 const slashSetup = require('../slash-setup');
 const fs = require('fs');
@@ -44,5 +44,10 @@ module.exports = class ReadyListener extends Listener {
         let alreadyRegistered = await client.api.applications(application.id).commands.get();
         if(client.config.slashCommands && !isEqual(alreadyRegistered.map(command => command.name), slashSetup.commands.map(command => command.name))) slashSetup(client);
         if(client.config.slashCommands === false && alreadyRegistered) slashSetup.deleteCommands(client)
+        if(client.guilds.cache.size == 0) {
+            let invite = await client.generateInvite({permissions: ["MANAGE_GUILD", "VIEW_CHANNEL", "SEND_MESSAGES", "ADMINISTRATOR"]})
+            if(client.config.slashCommands) invite += "%20applications.commands"
+            console.log(yellowBright(`It seems like I am not in any servers! Please invite me to a server using this link!\n`) + invite)
+        }
     };
 };
