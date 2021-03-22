@@ -3,7 +3,6 @@ const { MessageEmbed } = require('discord.js');
 module.exports = class AddInvitesCommand extends Command {
     constructor() {
         super('addInvites', {
-            aliases: ['addinvites'],
             description: {
                 content: 'Add the specified amount of invites to the mentioned members.',
                 usage: '<member> <invites>'

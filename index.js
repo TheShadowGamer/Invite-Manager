@@ -36,7 +36,8 @@ let commandHandler = new CommandHandler(client, {
             retries: 1,
             time: 30000
         }
-    }
+    },
+    commandUtil: true
 });
 client.handler = commandHandler;
 let listenerHandler = new ListenerHandler(client, {

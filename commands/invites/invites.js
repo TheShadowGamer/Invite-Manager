@@ -1,36 +1,28 @@
-const { Command } = require('discord-akairo')
-const { MessageEmbed } = require('discord.js');
-module.exports = class InvitesCommand extends Command {
+const { Command, Flag } = require('discord-akairo');
+const { MessageEmbed } = require("discord.js");
+
+module.exports = class inviteCommand extends Command {
     constructor() {
-        super('invites', {
+        super('invite', {
             aliases: ['invites'],
-            description: {
-                content: 'Shows how many invites you or the mentioned member has',
-                usage: '<member>'
-            },
             category: 'invites',
-            clientPermissions: ['EMBED_LINKS'],
-            ratelimit: 2,
-            args: [
-                {
-                    id: 'member',
-                    type: 'member',
-                    default: (message) => message.member
-                },
-            ]
+            description: {
+                content: "Lets you add, remove, reset, or see invites. \n\nadd - Add the specified amount of invites to the mentioned members.\nremove - Removes the specified amount of invites from the mentioned member.\nreset - Remove all invites from the mentioned member.\nshow - Shows how many invites you or the mentioned member has.",
+                usage: "<add/remove/reset/[show]> [member] [number]"
+            },
+            *args() {
+                const method = yield {
+                    type: [ 
+                        ['addInvites', 'add'],
+                        ['removeInvites', 'remove'],
+                        ['showInvites', 'show'],
+                        ['resetInvites', 'reset']
+                    ],
+                    default: "showInvites"
+                };
+                return Flag.continue(method);
+            }
         });
-    };
-    async exec(message, {member}) {
-        const { client } = this;
-        const { invites } = client;
-        const embed = new MessageEmbed()
-        .setFooter(client.user.username, client.user.displayAvatarURL())
-        .setTimestamp()
-        .setColor(client.config.colors.main);
-        let foc = await invites.findOrCreate({where: {discordUser: member.id, guildID: message.guild.id}, defaults: {discordUser: member.id, invites: 0, guildID: message.guild.id}});
-        embed.setTitle(`**${member.displayName}**`)
-        .setDescription(`${member.toString()} has **${foc[0].invites ? foc[0].invites : '0'}** invites!`);
-        return message.channel.send(embed);
     };
 };
 

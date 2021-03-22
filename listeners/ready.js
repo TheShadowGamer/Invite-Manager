@@ -1,9 +1,9 @@
 const { Listener } = require('discord-akairo');
-const figlet = require('figlet');
+const { textSync } = require('figlet');
 const { red, yellow, yellowBright } = require('chalk');
 const { isEqual }= require('lodash');
-const slashSetup = require('../slash-setup');
-const fs = require('fs');
+const { botstatus } = require('../config');
+const { registerCommands, commands, deleteCommands } = require('../slash-setup');
 module.exports = class ReadyListener extends Listener {
     constructor() {
         super('ready', {
@@ -14,7 +14,7 @@ module.exports = class ReadyListener extends Listener {
     async exec() {
         const { client } = this;
         const { guildInvites } = client;
-        console.log(yellow(figlet.textSync('Invite Manager', { horizontalLayout: 'full' })));
+        console.log(yellow(textSync('Invite Manager', { horizontalLayout: 'full' })));
         console.log(red('Bot started!\n---\n'
             + `> Users: ${client.users.cache.size}\n`
             + `> Channels: ${client.channels.cache.size}\n`
@@ -23,13 +23,11 @@ module.exports = class ReadyListener extends Listener {
             let invites = await guild.fetchInvites();
             guildInvites.set(guild.id, invites);
         });
-        let botstatus = fs.readFileSync('././bot-status.json');
-        botstatus = JSON.parse(botstatus);
-        if(botstatus.enabled.toLowerCase() == 'true') {
+        if(botstatus.enabled === false) {
             if(botstatus.activity_type.toUpperCase() == 'STREAMING') {
-                client.user.setPresence({ activity: { name: botstatus.activity_text, type: botstatus.activity_type.toUpperCase()}, status: botstatus.status.toLowerCase() }).catch(console.error);
+                client.user.setPresence({activity: {name: botstatus.activity_text, type: botstatus.activity_type.toUpperCase(), url: botstatus.activity_url}, status: botstatus.status.toLowerCase() || 'online'});
             } else {
-                client.user.setPresence({ activity: { name: botstatus.activity_text, type: botstatus.activity_type.toUpperCase()}, status: botstatus.status.toLowerCase() }).catch(console.error);
+                client.user.setPresence({activity: {name: botstatus.activity_text, type: botstatus.activity_type.toUpperCase()}, status: botstatus.status.toLowerCase() || 'online'});
             };
         };
         let application = await client.fetchApplication();
@@ -42,8 +40,8 @@ module.exports = class ReadyListener extends Listener {
             };
         };
         let alreadyRegistered = await client.api.applications(application.id).commands.get();
-        if(client.config.slashCommands && !isEqual(alreadyRegistered.map(command => command.name), slashSetup.commands.map(command => command.name))) slashSetup(client);
-        if(client.config.slashCommands === false && alreadyRegistered) slashSetup.deleteCommands(client)
+        if(client.config.slashCommands && !isEqual(alreadyRegistered.map(command => command.name), commands.map(command => command.name))) registerCommands(client);
+        if(client.config.slashCommands === false && alreadyRegistered) deleteCommands(client)
         if(client.guilds.cache.size == 0) {
             let invite = await client.generateInvite({permissions: ["MANAGE_GUILD", "VIEW_CHANNEL", "SEND_MESSAGES", "ADMINISTRATOR"]})
             if(client.config.slashCommands) invite += "%20applications.commands"

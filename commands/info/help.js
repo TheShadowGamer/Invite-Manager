@@ -19,17 +19,20 @@ module.exports = class HelpCommand extends Command {
             ]
         });
     };
-    exec(message, {command}) {
+    exec(message, {command}) { 
         let embed = new MessageEmbed()
         .setColor(this.client.config.colors.main)
         .setTimestamp()
         .setAuthor(this.client.user.username, this.client.user.displayAvatarURL({dynamic: true}));
         const prefix = this.handler.prefix;
         if (!command) {
-            embed.setTitle('Here are all of my commands!')
-            .setDescription(`For more info on a specfic command, please do \`${prefix}help [command]\`!`);
+            embed.setTitle('Here are all of my commands!').setDescription(`For more info on a specfic command, please do \`${prefix}help [command]\`!`);
             this.handler.categories.each((category) => {
-                embed.addField(category.id.slice(0)[0].toUpperCase() + category.id.slice(1), category.map((command) => prefix + command.aliases[0]).join(', '));
+                let commands = []
+                category.each(command => {
+                    if(command.aliases[0]) commands.push(`${prefix}${command.aliases[0]}`)
+                })
+                embed.addField(category.id.slice(0)[0].toUpperCase() + category.id.slice(1), commands.join(', '));
             });
             return message.channel.send(embed);
         };
@@ -45,25 +48,26 @@ module.exports = class HelpCommand extends Command {
 
 module.exports.slashCommand = async (client, interaction, args, respond) => {
     let embed = new MessageEmbed()
-    .setColor(client.config.colors.main)
+    .setColor(this.client.config.colors.main)
     .setTimestamp()
-    .setAuthor(client.user.username, client.user.displayAvatarURL({dynamic: true}));
-    const prefix = client.handler.prefix;
-    let command;
-    if(args) command = client.handler.findCommand(args[0].value);
+    .setAuthor(this.client.user.username, this.client.user.displayAvatarURL({dynamic: true}));
+    const prefix = this.handler.prefix;
     if (!command) {
-        embed.setTitle('Here are all of my commands!')
-        .setDescription(`For more info on a specfic command, please do \`${prefix}help [command]\`!`);
-        client.handler.categories.each((category) => {
-            embed.addField(category.id.slice(0)[0].toUpperCase() + category.id.slice(1), category.map((command) => prefix + command.aliases[0]).join(', '));
+        embed.setTitle('Here are all of my commands!').setDescription(`For more info on a specfic command, please do \`${prefix}help [command]\`!`);
+        this.handler.categories.each((category) => {
+            let commands = []
+            category.each(command => {
+                if(command.aliases[0]) commands.push(`${prefix}${command.aliases[0]}`)
+            })
+            embed.addField(category.id.slice(0)[0].toUpperCase() + category.id.slice(1), commands.join(', '));
         });
         return respond({embeds: [embed]});
     };
     embed.setTitle(command.aliases[0])
     .setDescription('<> Is a required argument.\n[] Is an optional argument.')
-    .addField('Usage:', `${prefix}${command.aliases[0]}${command.description ? ' ' + `${command.description.usage ? command.description.usage : ""}` : ''}`);
+    .addField('Usage:', `${prefix}${command.aliases[0]}${command.description ? ' ' + command.description.usage : ''}`);
     if(command.aliases.length > 1) embed.addField('Aliases', command.aliases.splice(0).join(', '));
-    embed.addField('Description:', command.description.content)
-    .addField('Owner Only?', command.ownerOnly.toString().slice(0)[0].toUpperCase() + command.ownerOnly.toString().slice(1));
+    embed.addField('Description:', command.description.content);
+    embed.addField('Owner Only?', command.ownerOnly.toString().slice(0)[0].toUpperCase() + command.ownerOnly.toString().slice(1));
     return respond({embeds: [embed]});
 }

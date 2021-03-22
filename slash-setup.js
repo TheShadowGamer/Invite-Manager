@@ -90,8 +90,13 @@ let commands = [
         description: 'Sends a list of the top ten inviters.'
     }
 ]
+const { Client } = require("discord.js")
 
-module.exports = async (client) => {
+/**
+ * Adds all slash commands to the passed client
+ * @param {Client} client - The client to add slash commands to
+ */
+module.exports.registerCommands = async (client) => {
     let application = await client.fetchApplication();
     for (let i = 0; i < commands.length; i++) {
         setTimeout(async () => {
@@ -102,8 +107,10 @@ module.exports = async (client) => {
     }
 }
 
-module.exports.commands = commands
-
+/**
+ * Deletes all slash commands from the passed client
+ * @param {Client} client - The client to remove slash commands from
+ */
 module.exports.deleteCommands = async (client) => {
     let application = await client.fetchApplication()
     let commands = await client.api.applications(application.id).commands.get()
@@ -111,3 +118,5 @@ module.exports.deleteCommands = async (client) => {
         client.api.applications(application.id).commands(command.id).delete()
     })
 }
+
+module.exports.commands = commands

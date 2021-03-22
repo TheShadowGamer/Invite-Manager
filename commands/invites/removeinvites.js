@@ -3,7 +3,6 @@ const { MessageEmbed } = require('discord.js');
 module.exports = class RemoveInvitesCommand extends Command {
     constructor() {
         super('removeInvites', {
-            aliases: ['removeinvites'],
             description: {
                 content: 'Removes the specified amount of invites from the mentioned member.',
                 usage: '<member> <amount>'
@@ -16,7 +15,7 @@ module.exports = class RemoveInvitesCommand extends Command {
                     id: 'member',
                     type: 'member',
                     prompt: {
-                        start: 'Who would you like to give invites to?',
+                        start: 'Who would you like to take invites from?',
                         retry: 'That\'s not a valid member! Try again.'
                     }
                 },
@@ -24,7 +23,7 @@ module.exports = class RemoveInvitesCommand extends Command {
                     id: 'amount',
                     type: 'number',
                     prompt: {
-                        start: 'How many invites would you like to give this user?',
+                        start: 'How many invites would you like to take from this user?',
                         retry: 'That\'s not a valid number! Try again.'
                     }
                 }

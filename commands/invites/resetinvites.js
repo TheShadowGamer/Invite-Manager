@@ -3,7 +3,6 @@ const { MessageEmbed } = require('discord.js');
 module.exports = class ResetInvitesCommand extends Command {
     constructor() {
         super('resetInvites', {
-            aliases: ['resetinvites'],
             description: {
                 content: 'Remove all invites from the mentioned member.',
                 usage: ''
