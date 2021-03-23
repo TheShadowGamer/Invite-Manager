@@ -20,8 +20,9 @@ module.exports = class ShowInvitesCommand extends Command {
         });
     };
     async exec(message, {member}) {
-        let split = message.content.slice(this.handler.prefix).split(' ')
-        if(split[2]) member = this.client.util.resolveMember(split[2])
+        let split = message.content.slice(this.handler.prefix).split(' ');
+        if(split[1] === "show") split.shift();
+        if(split[1]) member = this.client.util.resolveMember(split[1], message.guild.members.cache);
         const { client } = this;
         const { invites } = client;
         const embed = new MessageEmbed()
