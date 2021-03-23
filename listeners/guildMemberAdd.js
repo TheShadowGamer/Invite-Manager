@@ -19,14 +19,16 @@ module.exports = class GuildMemberAddListener extends Listener {
         let foc = await this.client.invites.findOrCreate({where: {discordUser: usedInvite.inviter.id, guildID: member.guild.id}, defaults: {discordUser: usedInvite.inviter.id, invites: 0, guildID: member.guild.id}});
         await this.client.invites.findOrCreate({where: {discordUser: member.id, guildID: member.guild.id}, defaults: {inviter: usedInvite.inviter.id, discordUser: member.id, guildID: member.guild.id}})
         await foc[0].increment('invites');
-        let inviter = await member.guild.members.fetch(usedInvite.inviter);
-        this.client.config.rewards.forEach(reward => {
-            if(foc[0].invites + 1 >= reward.invitesNeeded) {
-                inviter.roles.add(reward.roleID);
-            } else {
-                return;
-            };
-        });
+        if(this.client.config.inviteRewards) {
+            let inviter = await member.guild.members.fetch(usedInvite.inviter);
+            this.client.config.rewards.forEach(reward => {
+                if(foc[0].invites + 1 >= reward.invitesNeeded) {
+                    inviter.roles.add(reward.roleID);
+                } else {
+                    return;
+                };
+            });
+        };
         if(!welcomeChannel) return;
         let toSend = this.client.config.welcomeMessage.replace(/\{member\}/g, member.toString()).replace(/\{inviter\}/g, usedInvite.inviter.tag).replace(/\{invites\}/g, foc[0].invites + 1);
         welcomeChannel.send(toSend).catch(err => console.log(err));
