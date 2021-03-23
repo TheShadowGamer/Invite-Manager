@@ -19,7 +19,16 @@ module.exports = class GuildMemberAddListener extends Listener {
         };
         await inviter.decrement('invites');
         inviter.user = await this.client.users.fetch(user.inviter).catch(err => console.log(err));
+        let inviterMember = await member.guild.members.fetch(inviter.discordUser);
+        this.client.config.rewards.forEach(reward => {
+            if(inviter.invites - 1 < reward.invitesNeeded && inviterMember.roles.cache.has(reward.roleID)) {
+                inviterMember.roles.remove(reward.roleID);
+            } else {
+                return;
+            };
+        });
         if(!welcomeChannel) return this.client.invites.destroy({where: {discordUser: member.id, guildID: member.guild.id}});
+        let toSend = this.client.config.welcomeMessage.replace(/\{member\}/g, member.user.tag).replace(/\{inviter\}/g, inviter.user.tag).replace(/\{invites\}/g, inviter.invites - 1);
         welcomeChannel.send(`${member.user.tag} left the server. They were invited by **${inviter.user.tag}** (who has ${inviter.invites - 1} invites).`).catch(err => console.log(err));
         this.client.invites.destroy({where: {discordUser: member.id}});
     };
