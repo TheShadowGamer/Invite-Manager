@@ -23,7 +23,7 @@ module.exports = class ReadyListener extends Listener {
             let invites = await guild.fetchInvites();
             guildInvites.set(guild.id, invites);
         });
-        if(botstatus.enabled === false) {
+        if(botstatus.enabled === true) {
             if(botstatus.activity_type.toUpperCase() == 'STREAMING') {
                 client.user.setPresence({activity: {name: botstatus.activity_text, type: botstatus.activity_type.toUpperCase(), url: botstatus.activity_url}, status: botstatus.status.toLowerCase() || 'online'});
             } else {
