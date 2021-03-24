@@ -1,15 +1,15 @@
 const { AkairoClient, CommandHandler, ListenerHandler } = require('discord-akairo');
 const { Team } = require('discord.js');
-const { prefix } = require("./config");
+const { prefix } = require('./config');
 const Sequelize = require('sequelize');
 const path = require('path');
 const fs = require('fs');
-const app = require("express")()
+const app = require('express')()
 require('dotenv').config();
 app.get("/", (req, res) => res.sendStatus(200))
 let listener = app.listen(process.env.PORT, () => console.log('Your app is currently listening on port: ' + listener.address().port));
 let client = new AkairoClient({partials: ['GUILD_MEMBER']});
-client.config = require("./config")
+client.config = require('./config')
 const sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: '.data/db.sqlite',

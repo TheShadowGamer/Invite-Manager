@@ -90,7 +90,7 @@ let commands = [
         description: 'Sends a list of the top ten inviters.'
     }
 ]
-const { Client } = require("discord.js")
+const { Client } = require('discord.js')
 
 /**
  * Adds all slash commands to the passed client
