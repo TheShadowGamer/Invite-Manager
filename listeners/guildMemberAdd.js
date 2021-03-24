@@ -30,7 +30,7 @@ module.exports = class GuildMemberAddListener extends Listener {
             });
         };
         if(!welcomeChannel) return;
-        let toSend = this.client.config.welcomeMessage.replace(/\{member\}/g, member.toString()).replace(/\{inviter\}/g, usedInvite.inviter.tag).replace(/\{invites\}/g, foc[0].invites + 1);
+        let toSend = this.client.config.welcomeMessage.replace(/\{member\}/g, member.toString()).replace(/\{inviter\}/g, usedInvite.inviter.tag).replace(/\{invites\}/g, foc[0].invites + 1).replace(/\{code\}/g, usedInvite.code).replace(/\{mention\}/g, usedInvite.inviter.toString()).replace(/\{ID\}/g, member.id).replace(/\{inviterID\}/g, usedInvite.inviter.id);
         welcomeChannel.send(toSend).catch(err => console.log(err));
     };
 }
