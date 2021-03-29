@@ -1,129 +1,92 @@
-const express = require('express');
-const app = express();
-
-app.get('/', (request, response) => {
-     response.sendStatus(200);
-});
-
-let listener = app.listen(process.env.PORT, () => {
-     console.log('Your app is currently listening on port: ' + listener.address().port);
-});
-
-const Discord = require('discord.js');
-const client = new Discord.Client();
-const chalk = require('chalk');
-const figlet = require('figlet');
-const guildInvites = new Map();
-require('dotenv').config();
+const { AkairoClient, CommandHandler, ListenerHandler } = require('discord-akairo');
+const { Team } = require('discord.js');
+const { prefix } = require('./config');
+const Sequelize = require('sequelize');
+const path = require('path');
 const fs = require('fs');
-
-let commandlist = [];
-
-fs.readdir('./commands/', async (err, files) => {
-    if(err){
-        return console.log(chalk.red('An error occured when checking the commands folder for commands to load: ' + err));
-    }
-    files.forEach(async (file) => {
-        if(!file.endsWith('.js')) return;
-        let commandFile = require(`./commands/${file}`);
-        commandlist.push({
-            file: commandFile,
-            name: file.split('.')[0]
+const app = require('express')()
+require('dotenv').config();
+app.get("/", (req, res) => res.sendStatus(200))
+let listener = app.listen(process.env.PORT, () => console.log('Your app is currently listening on port: ' + listener.address().port));
+let client = new AkairoClient({partials: ['GUILD_MEMBER']});
+client.config = require('./config')
+const sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: '.data/db.sqlite',
+    logging: false
+});
+const invites = sequelize.define('invite', {
+    discordUser: Sequelize.STRING,
+    inviter: Sequelize.STRING,
+    invites: Sequelize.NUMBER,
+    guildID: Sequelize.STRING
+});
+invites.sync();
+client.invites = invites;
+const guildInvites = new Map();
+client.guildInvites = guildInvites;
+const slashCommandList = [];
+client.slashCommandList = slashCommandList;
+let commandHandler = new CommandHandler(client, {
+    directory: './commands/',
+    allowMention: true,
+    prefix: prefix,
+    argumentDefaults: {
+        prompt: {
+            timeout: 'Time ran out, command has been cancelled.',
+            ended: 'Too many retries, command has been cancelled.',
+            cancel: 'Command has been cancelled.',
+            retries: 1,
+            time: 30000
+        }
+    },
+    commandUtil: true
+});
+commandHandler.resolver.addType("custom-MEMBER", async (message, phrase) => {
+    if(!phrase) return null
+    let member;
+    try {member = await message.guild.members.fetch(phrase)} catch (error) {}
+    if(!member) member = client.util.resolveMember(phrase, message.guild.members.cache)
+    if(!member) member = (await (message.guild.members.fetch({query: phrase}))).first()
+    return member || null
+})
+client.handler = commandHandler;
+let listenerHandler = new ListenerHandler(client, {
+    directory: './listeners/'
+});
+commandHandler.useListenerHandler(listenerHandler);
+listenerHandler.setEmitters({
+    commandHandler: commandHandler,
+    ws: client.ws
+});
+listenerHandler.loadAll();
+commandHandler.loadAll();
+async function registerSlashCommands(dir) {;
+    fs.readdir(path.join(__dirname, dir), async (err, files) => {
+        if(err){
+            return console.log(chalk.red('An error occured when checking the commands folder for commands to load: ' + err));
+        };
+        files.forEach(async (file) => {
+            fs.stat(path.join(__dirname, dir, file), (err, stat) => {
+                if(err) return console.log(chalk.red('An error occured when checking the commands folder for commands to load: ' + err));
+                if(stat.isDirectory()) {
+                    registerSlashCommands(path.join(dir, file));
+                } else {
+                    if(!file.endsWith('.js')) return;
+                    let commandFile = require(path.join(__dirname, dir, file));
+                    slashCommandList.push({
+                        run: commandFile.slashCommand,
+                        name: file.split('.')[0]
+                    });
+                };
+            });
         });
     });
-});
-
-client.on('ready', async () => {
-  console.log(chalk.yellow(figlet.textSync('Invite Manager', { horizontalLayout: 'full' })));
-  console.log(chalk.red(`Bot started!\n---\n`
-  + `> Users: ${client.users.cache.size}\n`
-  + `> Channels: ${client.channels.cache.size}\n`
-  + `> Servers: ${client.guilds.cache.size}`));
-  client.guilds.cache.forEach(guild => {
-    guild.fetchInvites()
-    .then(invites => guildInvites.set(guild.id, invites))
-    .catch(err => console.log(err));
-    });
-    let botstatus = fs.readFileSync('./bot-status.json');
-    botstatus = JSON.parse(botstatus);
-    if(botstatus.enabled.toLowerCase() == 'false') return;
-    if(botstatus.activity_type.toUpperCase() == 'STREAMING') {
-      client.user.setPresence({ activity: { name: botstatus.activity_text, type: botstatus.activity_type.toUpperCase()}, status: botstatus.status.toLowerCase() }).catch(console.error);
-    } else {
-      client.user.setPresence({ activity: { name: botstatus.activity_text, type: botstatus.activity_type.toUpperCase()}, status: botstatus.status.toLowerCase() }).catch(console.error);
-    }
-});
-
-client.on('inviteCreate', async invite => {
-  guildInvites.set(invite.guild.id, await invite.guild.fetchInvites())
-})
-
-client.on('guildMemberAdd', async member => {
-  if(process.env.welcomeChannel != "false") {
-    const welcomeChannel = await client.channels.fetch(process.env.welcomeChannel)
-    if(member.user.bot) return welcomeChannel.send(`<@${member.id}> joined the server using OAuth flow.`)
-  }
-  const db = require('./db.js')
-  const cachedInvites = guildInvites.get(member.guild.id);
-  const newInvites = await member.guild.fetchInvites();
-  guildInvites.set(member.guild.id, newInvites);
-  try {
-    const usedInvite = newInvites.find(inv => cachedInvites.get(inv.code).uses < inv.uses);
-    const currentInvites = await db.get(`${usedInvite.inviter.id}`)
-    if(currentInvites) {
-      const newamount = currentInvites-0 + 1-0
-      const welcomeChannel = await client.channels.fetch(process.env.welcomeChannel)
-      if(welcomeChannel) {
-        welcomeChannel.send(`<@${member.id}> joined the server. They were invited by **${usedInvite.inviter.tag}** (who has ${newamount} invites).`).catch(err => console.log(err));
-      }
-      db.set(`${member.id}`, `${usedInvite.inviter.id}`)
-      db.set(`${usedInvite.inviter.id}`, `${newamount}`)
-    } else {
-      const welcomeChannel = await client.channels.fetch(process.env.welcomeChannel)
-      db.set(`${usedInvite.inviter.id}`, `1`)
-      db.set(`${member.id}`, `${usedInvite.inviter.id}`)
-      if(welcomeChannel) {
-        welcomeChannel.send(`<@${member.id}> joined the server. They were invited by **${usedInvite.inviter.tag}** (who has 1 invite).`).catch(err => console.log(err));
-      }
-    }
-  }
-  catch(err) {
-    console.log(err);
-  }
-});
-
-client.on('guildMemberRemove', async member => {
-  if(process.env.welcomeChannel != "false") {
-    const welcomeChannel = await client.channels.fetch(process.env.welcomeChannel)
-    if(member.user.bot) return welcomeChannel.send(`<@${member.id}> left the server, they joined via OAuth.`)
-  }
-  const db = require('./db.js')
-  const inviter = await db.get(`${member.id}`)
-  const userinviter = await member.guild.members.fetch(`${inviter}`);
-  const currentInvites = await db.get(`${inviter}`)
-  try {
-    const welcomeChannel = await client.channels.fetch(process.env.welcomeChannel)
-    const newamount = currentInvites-0 - 1-0
-    if(welcomeChannel) {
-      welcomeChannel.send(`${member.user.tag} left the server. They were invited by **${userinviter.user.tag}** (who has ${newamount} invites).`).catch(err => console.log(err));
-    }
-    db.set(`${inviter}`, `${newamount}`)
-    db.delete(`${member.id}`)
-  }
-  catch(err) {
-    console.log(err);
-  }
-});
-
-client.on('message', async (message) => {
-    if(message.author.bot) return;
-    if(!message.content.startsWith(process.env.prefix)) return;
-    const args = message.content.slice(process.env.prefix.length).split(' ');
-    const commandName = args[0].toLowerCase();
-    args.shift();
-    const command = commandlist.findIndex((cmd) => cmd.name === commandName);
-    if(command == -1) return;
-    commandlist[command].file.run(client, message, args);
-});
-
+};
+registerSlashCommands('./commands/');
 client.login(process.env.token);
+client.fetchApplication().then((application) => {
+    let owners = application.owner;
+    if(owners instanceof Team) {owners = owners.members.map(user => user.id)} else {owners = owners.id};
+    client.ownerID = owners;
+});
