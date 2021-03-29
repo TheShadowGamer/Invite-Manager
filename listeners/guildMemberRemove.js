@@ -12,6 +12,7 @@ module.exports = class GuildMemberAddListener extends Listener {
         if(member.user.bot && welcomeChannel) return welcomeChannel.send(`${member.toString()} left the server, they joined via OAuth.`).catch(err => console.log(err));
         let user = await this.client.invites.findOne({where: {discordUser: member.id, guildID: member.guild.id}});
         if(!user || !user.inviter) return welcomeChannel.send(`${member.user.tag} left the server but I do not know who invited them.`);
+        if(user.inviter === 'VANITY') return welcomeChannel.send(`${member.user.tag} left the server. They joined using the server vanity URL.`);
         let inviter = await this.client.invites.findOne({where: {discordUser: `${user ? user.inviter : `none`}`, guildID: member.guild.id}});
         if(!inviter) {
             inviter = await this.client.users.fetch(user.inviter).catch(err => console.log(err));

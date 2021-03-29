@@ -21,6 +21,7 @@ module.exports = class ReadyListener extends Listener {
             + `> Servers: ${client.guilds.cache.size}`));
         client.guilds.cache.forEach(async guild => {
             let invites = await guild.fetchInvites();
+            if(guild.vanityURLCode) invites.set(guild.vanityURLCode, await guild.fetchVanityData());
             guildInvites.set(guild.id, invites);
         });
         if(botstatus.enabled === true) {
