@@ -4,10 +4,7 @@ const { prefix } = require('./config');
 const Sequelize = require('sequelize');
 const path = require('path');
 const fs = require('fs');
-const app = require('express')()
 require('dotenv').config();
-app.get("/", (req, res) => res.sendStatus(200))
-let listener = app.listen(process.env.PORT, () => console.log('Your app is currently listening on port: ' + listener.address().port));
 let client = new AkairoClient({partials: ['GUILD_MEMBER']});
 client.config = require('./config')
 const sequelize = new Sequelize({
