@@ -13,7 +13,7 @@ module.exports = class ResetInvitesCommand extends Command {
             args: [
                 {
                     id: 'member',
-                    type: 'member',
+                    type: 'custom-MEMBER',
                     prompt: {
                         start: 'Who would you like to give invites to?',
                         retry: 'That\'s not a valid member! Try again.'

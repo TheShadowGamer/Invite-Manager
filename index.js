@@ -42,6 +42,14 @@ let commandHandler = new CommandHandler(client, {
     },
     commandUtil: true
 });
+commandHandler.resolver.addType("custom-MEMBER", async (message, phrase) => {
+    if(!phrase) return null
+    let member;
+    try {member = await message.guild.members.fetch(phrase)} catch (error) {}
+    if(!member) member = client.util.resolveMember(phrase, message.guild.members.cache)
+    if(!member) member = (await (message.guild.members.fetch({query: phrase}))).first()
+    return member || null
+})
 client.handler = commandHandler;
 let listenerHandler = new ListenerHandler(client, {
     directory: './listeners/'

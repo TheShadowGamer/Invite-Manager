@@ -14,7 +14,7 @@ module.exports = class UserInfoCommand extends Command {
             args: [
                 {
                     id: 'member',
-                    type: 'member',
+                    type: 'custom-MEMBER',
                     prompt: {
                         start: 'Who would you like to lookup?',
                         retry: 'That\'s not a valid member! Try again.'
