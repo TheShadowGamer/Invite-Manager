@@ -1,15 +1,21 @@
 <h1 align="center">Invite Manager</h1>
 <p align="center">
-    <a href="LICENSE">
+    <a href="LICENSE" alt="EZ">
         <img src="https://img.shields.io/github/license/theshadowgamer/invite-manager?label=License">
     </a>
     <a href="https://github.com/theshadowgamer/invite-manager/stargazers">
         <img src="https://img.shields.io/github/stars/theshadowgamer/invite-manager?label=Stars">
     </a>
-    <img src="https://img.shields.io/github/v/release/theshadowgamer/invite-manager?label=Latest%20Version">
-    <img src="https://img.shields.io/github/last-commit/theshadowgamer/invite-manager?label=Last%20Update&logo=github">
+    <a href="https://github.com/TheShadowGamer/invite-manager/releases/latest">
+        <img src="https://img.shields.io/github/v/release/theshadowgamer/invite-manager?label=Latest%20Version">
+    </a>
+    <a href="https://github.com/TheShadowGamer/invite-manager/commit/master">
+        <img src="https://img.shields.io/github/last-commit/theshadowgamer/invite-manager?label=Last%20Update&logo=github">
+    </a>
     <img src="https://img.shields.io/github/languages/code-size/theshadowgamer/invite-manager?label=Size">
-    <img src="https://img.shields.io/github/issues/theshadowgamer/invite-manager?label=Issues">
+    <a href="https://github.com/TheShadowGamer/invite-manager/issues">
+        <img src="https://img.shields.io/github/issues/theshadowgamer/invite-manager?label=Issues">
+    </a>
 </p>
 
 ---
