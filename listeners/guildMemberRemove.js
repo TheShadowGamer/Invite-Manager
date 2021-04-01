@@ -31,7 +31,7 @@ module.exports = class GuildMemberAddListener extends Listener {
             });
         }
         if(!welcomeChannel) return this.client.invites.destroy({where: {discordUser: member.id, guildID: member.guild.id}});
-        let toSend = this.client.config.welcomeMessage.replace(/\{member\}/g, member.user.tag).replace(/\{inviter\}/g, inviter.user.tag).replace(/\{invites\}/g, inviter.invites - 1).replace(/\{mention\}/g, inviterMember.toString()).replace(/\{ID\}/g, member.id).replace(/\{inviterID\}/g, inviterMember.id);
+        let toSend = this.client.config.leaveMessage.replace(/\{member\}/g, member.user.tag).replace(/\{inviter\}/g, inviter.user.tag).replace(/\{invites\}/g, inviter.invites - 1).replace(/\{mention\}/g, inviterMember.toString()).replace(/\{ID\}/g, member.id).replace(/\{inviterID\}/g, inviterMember.id);
         welcomeChannel.send(toSend).catch(err => console.log(err));
         this.client.invites.destroy({where: {discordUser: member.id}});
     };
