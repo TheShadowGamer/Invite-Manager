@@ -7,6 +7,8 @@ module.exports = class InviteCreateListener extends Listener {
         });
     };
     async exec(invite) {
-        this.client.guildInvites.set(invite.guild.id, await invite.guild.fetchInvites());
+        let invites = await invite.guild.fetchInvites();
+        if(invite.guild.vanityURLCode) invites.set(invite.guild.vanityURLCode, await invite.guild.fetchVanityData());
+        this.client.guildInvites.set(invite.guild.id, invites);
     };
 };
