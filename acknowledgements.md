@@ -1,4 +1,4 @@
-The Slash Command Handler ([source](https://github.com/yogurtsyum/i-want-a-bot/blob/slash-commands/index.js#L75-L106)) ([used here](https://github.com/TheShadowGamer/Invite-Manager/blob/main/listeners/interactionCreate.js#L7-L42)):
+The Slash Command Handler ([source](https://github.com/yogurtsyum/i-want-a-bot/blob/slash-commands/index.js#L75-L106)) ([used here](https://github.com/TheShadowGamer/invite-manager/blob/master/listeners/interactionCreate.js#L11-L42)):
 
 MIT License
 
