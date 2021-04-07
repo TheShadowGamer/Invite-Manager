@@ -1,6 +1,6 @@
 {
   "name": "invite-manager",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Invite manager is an open source bot that allows you to track people's invites. You can join the support server here if you need help with anything: https://discord.gg/xNks8jb",
   "main": "index.js",
   "dependencies": {

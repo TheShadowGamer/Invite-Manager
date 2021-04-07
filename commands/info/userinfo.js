@@ -22,7 +22,7 @@ module.exports = class UserInfoCommand extends Command {
                 }
             ],
             userPermissions(message) {
-                if(!message.member.roles.cache.some(role => role.name === 'Manage Invites')) return 'Manage Invites';
+                if(!message.member.roles.cache.some(role => role.name === 'Manage Invites') && !message.member.permissions.has(['BAN_MEMBERS', 'KICK_MEMBERS', 'MANAGE_GUILD', 'MANAGE_CHANNELS'])) return 'Manage Invites';
                 return null;
             }
         });

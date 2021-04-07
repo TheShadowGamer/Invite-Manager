@@ -22,9 +22,12 @@ module.exports = class LeaderboardCommand extends Command {
         .setColor(client.config.colors.main);
         const all = await invites.findAll({order: [['invites', 'DESC']], limit: 10, where: {guildID: message.guild.id}});
         let LB = [];
+        let i = 0
         await all.forEach(async entry => {
             if(!entry.invites) return;
-            LB.push(`${LB.length + 1}. ${(await (client.users.fetch(entry.discordUser))).tag} - ${entry.invites}`);
+            let user = await client.users.fetch(entry.discordUser)
+            i++
+            LB.push(`${i}. **${user.username}**#${user.discriminator} - ${entry.invites}`);
         });
         if(LB.length === 0) {embed.setDescription('No one in this server has any invites!')} else {embed.setDescription(`Here are the top ${LB.length} inviters!\n${LB.join('\n')}`)}
         message.channel.send(embed);
@@ -39,9 +42,12 @@ module.exports.slashCommand = async (client, interaction, args, respond) => {
     .setColor(client.config.colors.main);
     const all = await invites.findAll({order: [['invites', 'DESC']], limit: 10, where: {guildID: interaction.guild.id}});
     let LB = [];
+    let i = 0
     await all.forEach(async entry => {
         if(!entry.invites) return;
-        LB.push(`${LB.length + 1}. ${(await (client.users.fetch(entry.discordUser))).tag} - ${entry.invites}`);
+        let user = await client.users.fetch(entry.discordUser)
+        i++
+        LB.push(`${i}. **${user.username}**#${user.discriminator} - ${entry.invites}`);
     });
     if(LB.length === 0) {embed.setDescription('No one in this server has any invites!')} else {embed.setDescription(`Here are the top ${LB.length} inviters!\n${LB.join('\n')}`)}
     respond({embeds: [embed]});
