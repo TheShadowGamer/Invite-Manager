@@ -76,7 +76,7 @@ module.exports.slashCommand = async (client, interaction, args, respond) => {
             return respond({embeds: [embed]});
         };
         await entry[0].decrement('invites', {by: amount});
-        embed.setDescription(`Removed ${amount} invites to ${member.toString()}! They now have ${entry[0].invites - amount} invites!`);
+        embed.setDescription(`Removed ${amount} invites from ${member.toString()}! They now have ${entry[0].invites - amount} invites!`);
         return respond({embeds: [embed]});
     };
 };
