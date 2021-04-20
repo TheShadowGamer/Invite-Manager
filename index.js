@@ -1,15 +1,16 @@
 const { AkairoClient, CommandHandler, ListenerHandler } = require('discord-akairo');
-const { Team } = require('discord.js');
+const { readdir, stat } = require('fs');
 const { prefix } = require('./config');
+const { Team } = require('discord.js');
+const { join } = require('path');
 const Sequelize = require('sequelize');
-const path = require('path');
-const fs = require('fs');
 const app = require('express')()
 require('dotenv').config();
 app.get("/", (req, res) => res.sendStatus(200))
 let listener = app.listen(process.env.PORT, () => console.log('Your app is currently listening on port: ' + listener.address().port));
 let client = new AkairoClient({partials: ['GUILD_MEMBER']});
 client.config = require('./config')
+client.tools = require('./functions')
 const sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: '.data/db.sqlite',
@@ -25,6 +26,7 @@ invites.sync();
 client.invites = invites;
 const guildInvites = new Map();
 client.guildInvites = guildInvites;
+client.sequelize = sequelize
 const slashCommandList = [];
 client.slashCommandList = slashCommandList;
 let commandHandler = new CommandHandler(client, {
@@ -42,13 +44,13 @@ let commandHandler = new CommandHandler(client, {
     },
     commandUtil: true
 });
-commandHandler.resolver.addType("custom-MEMBER", async (message, phrase) => {
-    if(!phrase) return null;
-    let member;
-    try {member = await message.guild.members.fetch(phrase)} catch (error) {};
-    if(!member) member = client.util.resolveMember(phrase, message.guild.members.cache);
-    if(!member) member = (await (message.guild.members.fetch({query: phrase}))).first();
-    return member || null;
+readdir(join(__dirname, './types/'), async (err, files) => {
+    if(err) return console.log(chalk.red('An error occured when checking the types folder for types to load: ' + err));
+    files.forEach(async (file) => {
+        if(!file.endsWith('.js')) return;
+        let typeFile = require(join(__dirname, 'types', file));
+        commandHandler.resolver.addType(file.split('.')[0], async (message, phrase) => typeFile(message, phrase, client))
+    });
 });
 client.handler = commandHandler;
 let listenerHandler = new ListenerHandler(client, {
@@ -61,19 +63,19 @@ listenerHandler.setEmitters({
 });
 listenerHandler.loadAll();
 commandHandler.loadAll();
-async function registerSlashCommands(dir) {;
-    fs.readdir(path.join(__dirname, dir), async (err, files) => {
+async function registerSlashCommands(dir) {
+    readdir(join(__dirname, dir), async (err, files) => {
         if(err){
             return console.log(chalk.red('An error occured when checking the commands folder for commands to load: ' + err));
         };
         files.forEach(async (file) => {
-            fs.stat(path.join(__dirname, dir, file), (err, stat) => {
+            stat(join(__dirname, dir, file), (err, stat) => {
                 if(err) return console.log(chalk.red('An error occured when checking the commands folder for commands to load: ' + err));
                 if(stat.isDirectory()) {
-                    registerSlashCommands(path.join(dir, file));
+                    registerSlashCommands(join(dir, file));
                 } else {
                     if(!file.endsWith('.js')) return;
-                    let commandFile = require(path.join(__dirname, dir, file));
+                    let commandFile = require(join(__dirname, dir, file));
                     slashCommandList.push({
                         run: commandFile.slashCommand,
                         name: file.split('.')[0]
