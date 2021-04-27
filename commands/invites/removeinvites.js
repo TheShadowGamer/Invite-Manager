@@ -48,7 +48,7 @@ module.exports = class RemoveInvitesCommand extends Command {
             return message.channel.send(embed);
         };
         await entry[0].decrement('invites', {by: amount});
-        embed.setDescription(`Added ${amount} invites to ${member.toString()}! They now have ${entry[0].invites - amount} invites!`);
+        embed.setDescription(`Removed ${amount} invites from ${member.toString()}! They now have ${entry[0].invites - amount} invites!`);
         return message.channel.send(embed);
     };
 };

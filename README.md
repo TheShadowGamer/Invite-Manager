@@ -29,8 +29,9 @@ If you need help with the bot, feel free to [join our support server](https://di
 **Other Information**  
 Invite Manager requires Node.js v12 or higher.   
 
-[License](https://github.com/TheShadowGamer/invite-manager/blob/master/LICENSE) 
-[Acknowledgements](https://github.com/TheShadowGamer/invite-manager/blob/master/acknowledgements.md)
+[License](https://github.com/TheShadowGamer/invite-manager/blob/master/LICENSE) <br>
+[Acknowledgements](https://github.com/TheShadowGamer/invite-manager/blob/master/acknowledgements.md) <br>
+[Plugins](https://github.com/TheShadowGamer/invite-manager-plugins)
 
 Please note we are not responsible for if anything happens to your bot account. It is your responsibility to keep the  token away from anyone you don't trust. The bot uses discord.js to interact with the Discord API with your bot token. Do not share your .env file with anyone once filled out.
 
